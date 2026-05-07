@@ -3,39 +3,49 @@
 <body>
 <script>
 
-const streamUrl = "https://stream.slam.nl/slam";
-
-// 🔥 PRO NOW PLAYING (proxy-free fallback version)
-async function getNowPlaying() {
-
-  try {
-
-    // próbujemy pobrać nagłówki streamu (ICY metadata hack)
-    const res = await fetch(streamUrl);
-
-    // UWAGA: GitHub Pages nie daje ICY parsing,
-    // więc robimy inteligentny fallback
-
-    const fakeTrack = "SLAM! FM LIVE";
-
-    document.body.innerText = JSON.stringify({
-      station: "SLAM! FM",
-      nowPlaying: fakeTrack
-    });
-
-  } catch (e) {
-
-    document.body.innerText = JSON.stringify({
-      station: "SLAM! FM",
-      nowPlaying: "LIVE"
-    });
-
+// 🎵 MULTI STATIONS
+const stations = {
+  slam: {
+    name: "SLAM! FM",
+    url: "https://stream.slam.nl/slam"
+  },
+  "538": {
+    name: "Radio 538",
+    url: "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO538.mp3"
+  },
+  ver: {
+    name: "Radio Veronica",
+    url: "https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3"
+  },
+  npo2: {
+    name: "NPO Radio 2",
+    url: "https://icecast.omroep.nl/radio2-bb-mp3"
   }
+};
+
+// 🔍 wybór stacji z URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("station") || "slam";
+
+const station = stations[id] || stations.slam;
+
+// 🔊 STREAM (WAŻNE)
+const audio = new Audio(station.url);
+audio.autoplay = true;
+audio.play();
+
+// 📺 NOW PLAYING (na razie stabilny fallback)
+function updateNowPlaying() {
+
+  document.body.innerText = JSON.stringify({
+    station: station.name,
+    nowPlaying: "LIVE"
+  });
 
 }
 
-getNowPlaying();
-setInterval(getNowPlaying, 15000);
+updateNowPlaying();
+setInterval(updateNowPlaying, 15000);
 
 </script>
 </body>
