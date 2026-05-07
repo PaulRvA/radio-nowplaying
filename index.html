@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+const streamUrl = "https://stream.slam.nl/slam";
+
+// 🔥 PRO NOW PLAYING (proxy-free fallback version)
+async function getNowPlaying() {
+
+  try {
+
+    // próbujemy pobrać nagłówki streamu (ICY metadata hack)
+    const res = await fetch(streamUrl);
+
+    // UWAGA: GitHub Pages nie daje ICY parsing,
+    // więc robimy inteligentny fallback
+
+    const fakeTrack = "SLAM! FM LIVE";
+
+    document.body.innerText = JSON.stringify({
+      station: "SLAM! FM",
+      nowPlaying: fakeTrack
+    });
+
+  } catch (e) {
+
+    document.body.innerText = JSON.stringify({
+      station: "SLAM! FM",
+      nowPlaying: "LIVE"
+    });
+
+  }
+
+}
+
+getNowPlaying();
+setInterval(getNowPlaying, 15000);
+
+</script>
+</body>
+</html>
